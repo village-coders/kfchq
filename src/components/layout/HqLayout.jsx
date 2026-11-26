@@ -125,7 +125,7 @@ export default function HqLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f4f5f7] text-slate-900">
+    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-[#f4f5f7] text-slate-900 overflow-x-hidden">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -136,7 +136,7 @@ export default function HqLayout({ children }) {
 
       {/* Executive Obsidian Sidebar */}
       <aside
-        className={`fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 w-[264px] bg-[#0b0e14] text-slate-200 border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-out shrink-0 ${
+        className={`fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 w-[82vw] max-w-[280px] lg:w-[264px] bg-[#0b0e14] text-slate-200 border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-out shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -155,7 +155,7 @@ export default function HqLayout({ children }) {
                 KFC HEADQUARTERS
               </div>
               <div className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
-                HFA Governance Suite
+                Halal Food Authority
               </div>
             </div>
           </button>
@@ -263,7 +263,7 @@ export default function HqLayout({ children }) {
       {/* Main Content Shell */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Executive Top Bar */}
-        <header className="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-30 h-14 sm:h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 sm:px-8 flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -329,12 +329,12 @@ export default function HqLayout({ children }) {
         </header>
 
         {/* Active Screen */}
-        <main className="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto pb-24 lg:pb-10">
+        <main className="flex-1 px-3.5 sm:px-8 py-4 sm:py-6 max-w-[1400px] w-full mx-auto pb-24 lg:pb-10">
           {children}
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0b0e14]/95 backdrop-blur-md border-t border-white/10 grid grid-cols-5 py-1.5 px-1">
+        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0b0e14]/95 backdrop-blur-md border-t border-white/10 grid grid-cols-5 pt-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] px-1">
           {[
             { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'FRANCHISEE_LIST', label: 'Franchises', icon: Building2 },

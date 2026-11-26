@@ -137,86 +137,86 @@ export default function OverviewScreen() {
   }, [audits.length, stats.passedAudits, stats.otherFailed, stats.l3Failed, stats.pendingAudits]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Executive Header Strip */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-1">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] sm:text-xs font-medium text-slate-500">
             <span>{todayLabel}</span>
             <span className="text-slate-300">&bull;</span>
             <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              HFA Live Governance Sync
+              HFA Live Sync
             </span>
           </div>
-          <h2 className="text-2xl sm:text-[28px] font-extrabold text-slate-900 tracking-tight mt-1">
+          <h2 className="text-xl sm:text-[28px] font-extrabold text-slate-900 tracking-tight mt-1">
             Welcome back, {hqUser?.fullName?.split(' ')[0] || hqUser?.username || 'Executive'}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            National overview of KFC franchise partners, Halal certification coverage, audit compliance, and active submissions.
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5 leading-relaxed">
+            Overview of KFC franchise partners, Halal certification coverage, audit compliance, and active submissions.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 w-full lg:w-auto shrink-0">
           <button
             type="button"
             onClick={() => setShowFranchiseModal(true)}
-            className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="px-3 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-xs font-semibold inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
           >
-            <Building2 className="w-3.5 h-3.5 text-amber-600" />
-            <span>Add Franchisee</span>
+            <Building2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span className="truncate">Add Franchisee</span>
           </button>
           <button
             type="button"
             onClick={() => setShowStoreModal(true)}
-            className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="px-3 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-xs font-semibold inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
           >
-            <Store className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Add Store</span>
+            <Store className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span className="truncate">Add Store</span>
           </button>
           <button
             type="button"
             onClick={() => setShowProductModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-[#0b0e14] hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+            className="col-span-2 sm:col-span-1 px-4 py-2.5 rounded-xl bg-[#0b0e14] hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5 text-[#f43f5e]" />
+            <Plus className="w-3.5 h-3.5 text-[#f43f5e] shrink-0" />
             <span>Request New Product</span>
           </button>
         </div>
       </div>
 
-      {/* Primary 4-Column Executive KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* Primary 4-Column Executive KPI Cards (2x2 on Mobile, 4-col on XL) */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         {/* KPI 1: Franchisees */}
         <button
           type="button"
           onClick={() => setActiveScreen('FRANCHISEE_LIST')}
-          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
+          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-3.5 sm:p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer min-w-0"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Franchisee Groups
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">
+              Franchisees
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-[#c8102e] flex items-center justify-center">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-50 text-[#c8102e] flex items-center justify-center shrink-0">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <div className="text-3xl font-extrabold text-slate-900 tabular-nums">
+          <div className="mt-2.5 sm:mt-3 flex items-baseline justify-between gap-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums">
               {isLoading ? (
-                <span className="inline-block w-14 h-8 bg-slate-100 rounded-lg animate-pulse" />
+                <span className="inline-block w-12 h-7 bg-slate-100 rounded-lg animate-pulse" />
               ) : (
                 franchiseCount
               )}
             </div>
-            <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
+            <span className="hidden sm:inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
               Directory
               <ArrowUpRight className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span>Avg. stores / group</span>
-            <span className="font-semibold text-slate-700 tabular-nums">
+          <div className="mt-2.5 sm:mt-3 pt-2.5 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
+            <span className="truncate">Avg / group</span>
+            <span className="font-semibold text-slate-700 tabular-nums shrink-0">
               {franchiseCount > 0 ? (stats.totalStores / franchiseCount).toFixed(1) : '0.0'}
             </span>
           </div>
@@ -226,29 +226,29 @@ export default function OverviewScreen() {
         <button
           type="button"
           onClick={() => setActiveScreen('STORE_LIST')}
-          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
+          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-3.5 sm:p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer min-w-0"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Registered Stores
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">
+              Stores
             </span>
-            <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center shrink-0">
               <Store className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <div className="text-3xl font-extrabold text-slate-900 tabular-nums">
+          <div className="mt-2.5 sm:mt-3 flex items-baseline justify-between gap-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums">
               {isLoading ? (
-                <span className="inline-block w-16 h-8 bg-slate-100 rounded-lg animate-pulse" />
+                <span className="inline-block w-12 h-7 bg-slate-100 rounded-lg animate-pulse" />
               ) : (
                 stats.totalStores
               )}
             </div>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 tabular-nums">
-              {stats.certRate}% Certified
+            <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-50 text-emerald-700 tabular-nums shrink-0">
+              {stats.certRate}%
             </span>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100">
+          <div className="mt-2.5 sm:mt-3 pt-2.5 sm:pt-3 border-t border-slate-100">
             <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
               <div
                 className="h-full rounded-full bg-emerald-500 transition-all duration-500"
@@ -262,35 +262,35 @@ export default function OverviewScreen() {
         <button
           type="button"
           onClick={() => setActiveScreen('AUDIT_LIST')}
-          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
+          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-3.5 sm:p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer min-w-0"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Audit Pass Rate
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">
+              Pass Rate
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <div className="text-3xl font-extrabold text-slate-900 tabular-nums">
+          <div className="mt-2.5 sm:mt-3 flex items-baseline justify-between gap-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums">
               {isLoading ? (
-                <span className="inline-block w-16 h-8 bg-slate-100 rounded-lg animate-pulse" />
+                <span className="inline-block w-12 h-7 bg-slate-100 rounded-lg animate-pulse" />
               ) : (
                 `${stats.passRate}%`
               )}
             </div>
-            <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
+            <span className="hidden sm:inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
               {audits.length} Audits
               <ArrowUpRight className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <div className="mt-2.5 sm:mt-3 pt-2.5 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
             <span className="text-emerald-700 font-semibold tabular-nums">
-              {stats.passedAudits} Passed
+              {stats.passedAudits} Pass
             </span>
             <span className="text-rose-700 font-semibold tabular-nums">
-              {stats.totalFailed} Failed
+              {stats.totalFailed} Fail
             </span>
           </div>
         </button>
@@ -299,35 +299,33 @@ export default function OverviewScreen() {
         <button
           type="button"
           onClick={() => setActiveScreen('PRODUCT_LIST')}
-          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer"
+          className="group text-left bg-white rounded-2xl border border-slate-200/80 p-3.5 sm:p-5 shadow-2xs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer min-w-0"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Approved Products
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 truncate">
+              Products
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
               <Package className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline justify-between">
-            <div className="text-3xl font-extrabold text-slate-900 tabular-nums">
+          <div className="mt-2.5 sm:mt-3 flex items-baseline justify-between gap-1">
+            <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 tabular-nums">
               {isLoading ? (
-                <span className="inline-block w-16 h-8 bg-slate-100 rounded-lg animate-pulse" />
+                <span className="inline-block w-12 h-7 bg-slate-100 rounded-lg animate-pulse" />
               ) : (
                 products.length
               )}
             </div>
-            <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
+            <span className="hidden sm:inline-flex items-center gap-0.5 text-[11px] font-semibold text-slate-500 group-hover:text-[#c8102e] transition-colors">
               Catalogue
               <ArrowUpRight className="w-3.5 h-3.5" />
             </span>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 tabular-nums">
-            <span>Frz {stats.prodCats.Frozen}</span>
-            <span className="text-slate-300">&bull;</span>
-            <span>Chl {stats.prodCats.Chilled}</span>
-            <span className="text-slate-300">&bull;</span>
-            <span>Amb {stats.prodCats.Ambient}</span>
+          <div className="mt-2.5 sm:mt-3 pt-2.5 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500 tabular-nums">
+            <span>F:{stats.prodCats.Frozen}</span>
+            <span>C:{stats.prodCats.Chilled}</span>
+            <span>A:{stats.prodCats.Ambient}</span>
           </div>
         </button>
       </div>
@@ -655,7 +653,59 @@ export default function OverviewScreen() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile Stacked Partner Cards (zero horizontal scroll) */}
+          <div className="sm:hidden divide-y divide-slate-100">
+            {isLoading ? (
+              <div className="p-4 space-y-2.5">
+                {[1, 2, 3, 4].map((n) => (
+                  <div key={n} className="h-14 rounded-xl bg-slate-100 animate-pulse" />
+                ))}
+              </div>
+            ) : topFranchises.length === 0 ? (
+              <div className="py-10 text-center text-xs text-slate-500">
+                No franchisee records available.
+              </div>
+            ) : (
+              topFranchises.map((f) => {
+                const pct = f.total > 0 ? Math.round((f.certified / f.total) * 100) : 0;
+                return (
+                  <button
+                    key={f.name}
+                    type="button"
+                    onClick={() => {
+                      setSelectedFranchiseName(f.name);
+                      setActiveScreen('FRANCHISEE_LIST');
+                    }}
+                    className="w-full text-left px-4 py-3.5 hover:bg-slate-50 transition-colors cursor-pointer space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-sm text-slate-900 truncate">
+                        {f.name}
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 tabular-nums shrink-0">
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 tabular-nums">
+                      <span>{f.total} Stores</span>
+                      <span className="text-emerald-700 font-semibold">{f.certified} Certified</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${
+                          pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-[#c8102e]'
+                        }`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          {/* Desktop/Tablet Structured Table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-semibold uppercase tracking-wider text-slate-500">

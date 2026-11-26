@@ -35,7 +35,7 @@ export default function HqLoginScreen() {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-[#f4f5f7]">
+    <div className="min-h-[100dvh] grid grid-cols-1 lg:grid-cols-12 bg-[#f4f5f7]">
       {/* Left Executive Brand Panel */}
       <div className="hidden lg:flex lg:col-span-5 xl:col-span-5 bg-[#0b0e14] text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden">
         <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#c8102e]/25 blur-3xl" />
@@ -51,7 +51,7 @@ export default function HqLoginScreen() {
               KFC HEADQUARTERS
             </div>
             <div className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">
-              Halal Food Authority Governance
+              Halal Food Authority
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function HqLoginScreen() {
               Executive Portal
             </span>
             <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight leading-tight">
-              National Halal Compliance &amp; Franchise Oversight
+              Halal Compliance &amp; Franchise Management
             </h2>
             <p className="text-sm text-slate-400 mt-3 leading-relaxed">
               Centralized executive access to KFC franchise groups, store certifications, HFA audit outcomes, and product approval requests.
