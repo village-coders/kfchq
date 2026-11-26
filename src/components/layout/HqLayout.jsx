@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -14,7 +14,8 @@ import {
   X,
   RefreshCw,
   Crown,
-  LogOut
+  LogOut,
+  ChevronRight
 } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
 import { useHqAuth } from '../../context/HqAuthContext';
@@ -30,10 +31,23 @@ export default function HqLayout({ children }) {
     setShowFranchiseModal,
     setShowStoreModal,
     refreshAll,
-    isLoading
+    isLoading,
+    stores,
+    audits,
+    requests
   } = useHq();
   const { hqUser, logout } = useHqAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const navCounts = useMemo(() => {
+    const failed = audits.filter(
+      (a) => a.category === 'Other Fail' || a.category === 'L3 Critical Fail'
+    ).length;
+    const pendingReqs = requests.filter(
+      (r) => !['approved', 'rejected'].includes(String(r.status || '').toLowerCase())
+    ).length;
+    return { failed, pendingReqs };
+  }, [audits, requests]);
 
   const mainNav = [
     { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard },
@@ -45,17 +59,25 @@ export default function HqLayout({ children }) {
   ];
 
   const requestNav = [
-    { id: 'FRANCHISEE_REQUESTS', label: 'Franchisee Request List', icon: FilePlus2 },
-    { id: 'STORE_REQUESTS', label: 'Store Request List', icon: FilePlus2 },
-    { id: 'PRODUCT_REQUESTS', label: 'Product Request List', icon: FilePlus2 }
+    { id: 'FRANCHISEE_REQUESTS', label: 'Franchisee Requests', icon: FilePlus2 },
+    { id: 'STORE_REQUESTS', label: 'Store Requests', icon: FilePlus2 },
+    { id: 'PRODUCT_REQUESTS', label: 'Product Requests', icon: FilePlus2, badge: navCounts.pendingReqs || null }
   ];
 
   const outcomeNav = [
     { id: 'PASSED_AUDITS', label: 'Passed Audits', icon: CheckCircle2 },
-    { id: 'FAILED_AUDITS', label: 'Failed Audits', icon: ShieldAlert }
+    { id: 'FAILED_AUDITS', label: 'Failed Audits', icon: ShieldAlert, badge: navCounts.failed || null, badgeTone: 'crimson' }
   ];
 
   const allNav = [...mainNav, ...requestNav, ...outcomeNav];
+  const currentNav = allNav.find((n) => n.id === activeScreen) || mainNav[0];
+
+  const initials = useMemo(() => {
+    const name = hqUser?.fullName || hqUser?.username || 'HQ';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  }, [hqUser]);
 
   const handleNav = (id) => {
     setActiveScreen(id);
@@ -70,50 +92,70 @@ export default function HqLayout({ children }) {
         key={item.id}
         type="button"
         onClick={() => handleNav(item.id)}
-        className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+        className={`group relative w-full flex items-center justify-between gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all cursor-pointer ${
           active
-            ? 'bg-gradient-to-r from-[#c8102e] to-[#a60d26] text-white shadow-md shadow-rose-950/40'
-            : 'text-stone-400 hover:bg-white/5 hover:text-white'
+            ? 'bg-white/[0.09] text-white font-semibold'
+            : 'text-slate-400 hover:bg-white/[0.04] hover:text-slate-100'
         }`}
       >
-        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-stone-500'}`} />
-        <span className="truncate">{item.label}</span>
+        {active && (
+          <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-[#c8102e]" />
+        )}
+        <span className="flex items-center gap-2.5 min-w-0">
+          <Icon
+            className={`w-4 h-4 shrink-0 transition-colors ${
+              active ? 'text-[#f43f5e]' : 'text-slate-500 group-hover:text-slate-300'
+            }`}
+          />
+          <span className="truncate">{item.label}</span>
+        </span>
+        {item.badge ? (
+          <span
+            className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold tabular-nums shrink-0 ${
+              item.badgeTone === 'crimson'
+                ? 'bg-rose-500/20 text-rose-300'
+                : 'bg-amber-500/20 text-amber-300'
+            }`}
+          >
+            {item.badge}
+          </span>
+        ) : null}
       </button>
     );
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#fafaf9] text-stone-900">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#f4f5f7] text-slate-900">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Obsidian Static Desktop Sidebar */}
+      {/* Executive Obsidian Sidebar */}
       <aside
-        className={`fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 w-72 bg-[#0f1117] text-stone-200 border-r border-white/10 flex flex-col transition-transform duration-200 ease-out shrink-0 ${
+        className={`fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 w-[264px] bg-[#0b0e14] text-slate-200 border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-out shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Brand Header */}
-        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+        <div className="px-4 py-4 border-b border-white/[0.07] flex items-center justify-between">
           <button
             type="button"
             onClick={() => handleNav('DASHBOARD')}
-            className="flex items-center gap-3 text-left cursor-pointer"
+            className="flex items-center gap-3 text-left cursor-pointer group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c8102e] to-[#8f0b20] flex items-center justify-center shadow-lg shadow-rose-950/50 shrink-0">
-              <Crown className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-lg bg-[#c8102e] flex items-center justify-center shadow-md shadow-rose-950/50 shrink-0 ring-1 ring-white/15">
+              <Crown className="w-4 h-4 text-white" />
             </div>
-            <div>
-              <div className="text-sm font-extrabold tracking-tight text-white">
+            <div className="min-w-0">
+              <div className="text-[13px] font-extrabold tracking-tight text-white leading-tight">
                 KFC HEADQUARTERS
               </div>
-              <div className="text-[10px] text-amber-400/90 font-semibold tracking-wider uppercase">
-                Halal Food Authority
+              <div className="text-[10px] text-slate-400 font-medium tracking-wider uppercase mt-0.5">
+                HFA Governance Suite
               </div>
             </div>
           </button>
@@ -121,38 +163,38 @@ export default function HqLayout({ children }) {
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1.5 text-stone-400 hover:text-white rounded-lg cursor-pointer"
+            className="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-lg cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Navigation matching kfcrequest.hfa-portals.com */}
-        <nav className="flex-1 px-3.5 py-4 space-y-4 overflow-y-auto">
-          <div className="space-y-1">
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-stone-500">
-              Directory
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+          <div className="space-y-0.5">
+            <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+              Overview &amp; Directory
             </div>
             {mainNav.map(renderNavButton)}
           </div>
 
-          <div className="space-y-1 pt-3 border-t border-white/10">
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+          <div className="space-y-0.5 pt-4 border-t border-white/[0.07]">
+            <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
               Request Lists
             </div>
             {requestNav.map(renderNavButton)}
           </div>
 
-          <div className="space-y-1 pt-3 border-t border-white/10">
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+          <div className="space-y-0.5 pt-4 border-t border-white/[0.07]">
+            <div className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
               Audit Outcomes
             </div>
             {outcomeNav.map(renderNavButton)}
           </div>
 
-          <div className="pt-3 border-t border-white/10 space-y-1.5">
-            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-stone-500">
-              Submit Request
+          <div className="pt-4 border-t border-white/[0.07] space-y-1.5">
+            <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+              Quick Submissions
             </div>
             <button
               type="button"
@@ -160,9 +202,9 @@ export default function HqLayout({ children }) {
                 setSidebarOpen(false);
                 setShowFranchiseModal(true);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-stone-200 border border-white/10 cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.07] transition-colors cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-amber-400" />
+              <Plus className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>Add New Franchisee</span>
             </button>
             <button
@@ -171,9 +213,9 @@ export default function HqLayout({ children }) {
                 setSidebarOpen(false);
                 setShowStoreModal(true);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-stone-200 border border-white/10 cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.07] transition-colors cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-emerald-400" />
+              <Plus className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>Add New Store</span>
             </button>
             <button
@@ -182,108 +224,117 @@ export default function HqLayout({ children }) {
                 setSidebarOpen(false);
                 setShowProductModal(true);
               }}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-stone-200 border border-white/10 cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.07] transition-colors cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-rose-400" />
+              <Plus className="w-3.5 h-3.5 text-rose-400 shrink-0" />
               <span>Add New Product</span>
             </button>
           </div>
         </nav>
 
-        {/* Footer Authenticated KFC User + Logout */}
-        <div className="p-3.5 m-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5">
-          <div className="flex items-center gap-3">
-            <div className="bg-white rounded-lg p-1.5 shrink-0">
-              <img src="/hfa-logo.png" alt="HFA" className="h-6 w-auto object-contain" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-bold text-white truncate">
-                {hqUser?.fullName || hqUser?.username || 'KFC HQ User'}
+        {/* Footer User Profile + Logout */}
+        <div className="p-3 border-t border-white/[0.07] bg-white/[0.02]">
+          <div className="flex items-center justify-between gap-2.5 px-1.5 py-1">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c8102e] to-[#7f0a1d] text-white text-xs font-bold flex items-center justify-center shrink-0 ring-1 ring-white/15">
+                {initials}
               </div>
-              <div className="text-[10px] text-amber-400/90 truncate">
-                {hqUser?.role || 'KFC Headquarters'}
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-white truncate">
+                  {hqUser?.fullName || hqUser?.username || 'KFC HQ User'}
+                </div>
+                <div className="text-[10px] text-slate-400 truncate">
+                  {hqUser?.role || 'KFC Headquarters'}
+                </div>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={logout}
+              title="Sign out"
+              className="p-2 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-500/15 transition-colors cursor-pointer shrink-0"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={logout}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/5 hover:bg-rose-600/20 text-rose-300 hover:text-rose-200 border border-white/10 text-xs font-semibold transition-colors cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
-          </button>
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content Shell */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Glass Header */}
-        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-3">
+        {/* Executive Top Bar */}
+        <header className="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 -ml-1.5 rounded-xl text-stone-700 hover:bg-stone-100 cursor-pointer"
+              className="lg:hidden p-2 -ml-1.5 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer"
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="min-w-0">
-              <div className="text-[11px] font-bold uppercase tracking-widest text-[#c8102e]">
-                KFC Headquarters Portal
-              </div>
-              <h1 className="text-base sm:text-lg font-extrabold text-stone-900 truncate">
-                {allNav.find((n) => n.id === activeScreen)?.label || 'Dashboard'}
+            <div className="flex items-center gap-2 text-xs sm:text-sm min-w-0">
+              <span className="hidden sm:inline font-medium text-slate-400">KFC HQ</span>
+              <ChevronRight className="hidden sm:inline w-3.5 h-3.5 text-slate-300 shrink-0" />
+              <h1 className="text-sm sm:text-base font-bold text-slate-900 truncate">
+                {currentNav.label}
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] font-medium text-slate-600 mr-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="tabular-nums">{stores.length} Stores Live</span>
+            </div>
+
             <button
               type="button"
               onClick={refreshAll}
               disabled={isLoading}
-              className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 cursor-pointer"
+              className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
               title="Refresh live data"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-[#c8102e]' : ''}`} />
             </button>
+
             <button
               type="button"
               onClick={() => setShowProductModal(true)}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#0f1117] hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5 text-rose-400" />
-              <span>Add New Product</span>
+              <Plus className="w-3.5 h-3.5 text-[#c8102e]" />
+              <span>New Product</span>
             </button>
+
             <button
               type="button"
               onClick={() => setShowStoreModal(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add New Store</span>
+              <Plus className="w-3.5 h-3.5 text-emerald-600" />
+              <span>New Store</span>
             </button>
+
             <button
               type="button"
               onClick={() => setShowFranchiseModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#c8102e] hover:bg-[#a60d26] text-white text-xs font-semibold shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#c8102e] hover:bg-[#a60d26] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Add New Franchisee</span>
+              <span className="hidden sm:inline">New Franchisee</span>
               <span className="sm:hidden">New</span>
             </button>
           </div>
         </header>
 
         {/* Active Screen */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-10">
+        <main className="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto pb-24 lg:pb-10">
           {children}
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0f1117]/95 backdrop-blur-md border-t border-white/10 grid grid-cols-5 py-1.5 px-1">
+        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-[#0b0e14]/95 backdrop-blur-md border-t border-white/10 grid grid-cols-5 py-1.5 px-1">
           {[
             { id: 'DASHBOARD', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'FRANCHISEE_LIST', label: 'Franchises', icon: Building2 },
@@ -298,11 +349,11 @@ export default function HqLayout({ children }) {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveScreen(tab.id)}
-                className={`flex flex-col items-center justify-center py-1 rounded-xl text-[10px] font-semibold ${
-                  active ? 'text-white' : 'text-stone-500'
+                className={`flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-semibold ${
+                  active ? 'text-white' : 'text-slate-500'
                 }`}
               >
-                <div className={`p-1 rounded-lg mb-0.5 ${active ? 'bg-[#c8102e]' : ''}`}>
+                <div className={`p-1 rounded-md mb-0.5 ${active ? 'bg-[#c8102e]' : ''}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <span className="truncate max-w-[60px]">{tab.label}</span>
