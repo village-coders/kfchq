@@ -125,7 +125,7 @@ export default function HqLayout({ children }) {
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-[#f4f5f7] text-slate-900 overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-[#f4f5f7] text-slate-900 overflow-x-clip">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -134,9 +134,9 @@ export default function HqLayout({ children }) {
         />
       )}
 
-      {/* Executive Obsidian Sidebar */}
+      {/* Static Fixed Executive Obsidian Sidebar */}
       <aside
-        className={`fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 w-[82vw] max-w-[280px] lg:w-[264px] bg-[#0b0e14] text-slate-200 border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-out shrink-0 ${
+        className={`fixed inset-y-0 left-0 z-50 h-[100dvh] w-[82vw] max-w-[280px] lg:w-[264px] bg-[#0b0e14] text-slate-200 border-r border-white/[0.08] flex flex-col transition-transform duration-200 ease-out shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -260,8 +260,8 @@ export default function HqLayout({ children }) {
         </div>
       </aside>
 
-      {/* Main Content Shell */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Main Content Shell (offset by fixed sidebar width on desktop) */}
+      <div className="min-h-[100dvh] flex flex-col min-w-0 lg:pl-[264px]">
         {/* Executive Top Bar */}
         <header className="sticky top-0 z-30 h-14 sm:h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 sm:px-8 flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3 min-w-0">
