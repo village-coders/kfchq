@@ -191,8 +191,64 @@ export default function AuditsScreen({ mode = 'ALL' }) {
         </div>
       </div>
 
-      {/* Results Table */}
-      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-2xs overflow-x-auto">
+      {/* Mobile Stacked Audit Cards (zero horizontal scroll) */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          [1, 2, 3].map((n) => (
+            <div key={n} className="h-28 rounded-2xl bg-white border border-slate-200 animate-pulse" />
+          ))
+        ) : filtered.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 py-10 text-center text-xs text-slate-500">
+            No audit records match your filters.
+          </div>
+        ) : (
+          filtered.slice(0, 60).map((a) => (
+            <div
+              key={a._id || a.id}
+              className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="text-sm font-bold text-slate-900 truncate">{a.storeName}</div>
+                  <div className="text-[11px] text-slate-500 truncate">
+                    #{a.branchCode || a.storeId || '—'} &bull; {a.franchisee || 'KFC Store'}
+                  </div>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                    a.category === 'Passed'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : a.category === 'L3 Critical Fail'
+                      ? 'bg-rose-100 text-rose-800'
+                      : a.category === 'Other Fail'
+                      ? 'bg-orange-100 text-orange-800'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  {a.category}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-600 pt-2 border-t border-slate-100">
+                <span>
+                  Auditor: <strong className="text-slate-800">{a.auditor}</strong>
+                </span>
+                <span>{a.auditDate}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewAudit(a)}
+                className="w-full py-2 rounded-xl bg-slate-100 hover:bg-[#0b0e14] hover:text-white text-slate-700 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>View Audit Details</span>
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop/Tablet Results Table */}
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[920px] text-xs sm:text-sm">
           <thead>
             <tr className="bg-[#0f1117] text-white text-[11px] uppercase tracking-wider">

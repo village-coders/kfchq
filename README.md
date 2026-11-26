@@ -1,4 +1,4 @@
-# KFC Headquarters — Halal Governance Portal
+# KFC Headquarters Portal
 
 Executive React + Vite portal for **KFC Headquarters**, connected to the shared `hfaKfc-Backend` API.
 
