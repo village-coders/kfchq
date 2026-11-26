@@ -10,9 +10,64 @@ function formatToday() {
   return `${String(d.getDate()).padStart(2, '0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
 }
 
+const HQ_SCREEN_TO_PATH = {
+  DASHBOARD: '/dashboard',
+  FRANCHISEE_LIST: '/franchisees',
+  STORE_LIST: '/stores',
+  AUDIT_LIST: '/audits',
+  PRODUCT_LIST: '/products',
+  CERTIFICATES: '/certificates',
+  FRANCHISEE_REQUESTS: '/franchisee-requests',
+  STORE_REQUESTS: '/store-requests',
+  PRODUCT_REQUESTS: '/product-requests',
+  PASSED_AUDITS: '/passed-audits',
+  FAILED_AUDITS: '/failed-audits'
+};
+
+const HQ_PATH_TO_SCREEN = Object.entries(HQ_SCREEN_TO_PATH).reduce((acc, [screen, path]) => {
+  acc[path] = screen;
+  return acc;
+}, {});
+
+function hqScreenFromPath(pathname) {
+  const clean = String(pathname || '/').replace(/\/+$/, '').toLowerCase() || '/';
+  return HQ_PATH_TO_SCREEN[clean] || null;
+}
+
 export function HqProvider({ children }) {
   const toast = useToast();
-  const [activeScreen, setActiveScreen] = useState('DASHBOARD');
+  const [activeScreen, setActiveScreenState] = useState(() => {
+    const fromUrl = typeof window !== 'undefined' ? hqScreenFromPath(window.location.pathname) : null;
+    return fromUrl || 'DASHBOARD';
+  });
+
+  const setActiveScreen = useCallback((nextScreen) => {
+    setActiveScreenState(nextScreen);
+    if (typeof window !== 'undefined') {
+      const targetPath = HQ_SCREEN_TO_PATH[nextScreen] || '/dashboard';
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ screen: nextScreen }, '', targetPath);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const targetPath = HQ_SCREEN_TO_PATH[activeScreen] || '/dashboard';
+    if (window.location.pathname !== targetPath) {
+      window.history.replaceState({ screen: activeScreen }, '', targetPath);
+    }
+  }, [activeScreen]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handlePopState = () => {
+      const matched = hqScreenFromPath(window.location.pathname);
+      if (matched) setActiveScreenState(matched);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const [franchisees, setFranchisees] = useState([]);
   const [stores, setStores] = useState([]);
   const [audits, setAudits] = useState([]);

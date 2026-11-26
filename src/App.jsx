@@ -44,6 +44,12 @@ function HqRouter() {
 function AuthenticatedApp() {
   const { hqUser, isCheckingAuth } = useHqAuth();
 
+  React.useEffect(() => {
+    if (!isCheckingAuth && !hqUser && typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      window.history.replaceState(null, '', '/login');
+    }
+  }, [isCheckingAuth, hqUser]);
+
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen bg-[#0f1117] text-white flex flex-col items-center justify-center gap-3">
