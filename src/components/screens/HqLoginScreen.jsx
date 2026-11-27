@@ -35,9 +35,9 @@ export default function HqLoginScreen() {
   };
 
   return (
-    <div className="min-h-[100dvh] grid grid-cols-1 lg:grid-cols-12 bg-[#f4f5f7]">
-      {/* Left Executive Brand Panel */}
-      <div className="hidden lg:flex lg:col-span-5 xl:col-span-5 bg-[#0b0e14] text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden">
+    <div className="min-h-[100dvh] grid grid-cols-1 lg:grid-cols-12 bg-gradient-to-br from-[#f8f9fc] via-[#fdf2f4]/60 to-[#eef2f7]">
+      {/* Left Executive Gradient Brand Panel */}
+      <div className="hidden lg:flex lg:col-span-5 xl:col-span-5 bg-gradient-to-br from-[#0b0e17] via-[#260f1c] to-[#7f0a20] text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden">
         <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#c8102e]/25 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-amber-500/10 blur-3xl" />
 
@@ -134,8 +134,8 @@ export default function HqLoginScreen() {
             <img src="/hfa-logo.png" alt="Halal Food Authority" className="h-10 w-auto object-contain" />
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
-            <div className="h-1 w-full bg-[#c8102e]" />
+          <div className="bg-white rounded-2xl shadow-xl shadow-rose-950/10 border border-slate-200/80 overflow-hidden">
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#c8102e] via-rose-500 to-amber-500" />
 
             <div className="p-7 sm:p-9">
               <div className="mb-7">
@@ -229,7 +229,7 @@ export default function HqLoginScreen() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-11 rounded-xl bg-[#c8102e] hover:bg-[#a60d26] text-white font-semibold text-sm shadow-sm flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer transition-colors"
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-[#c8102e] via-[#dc1e3d] to-[#e11d48] hover:from-[#a60d26] hover:to-[#c8102e] text-white font-bold text-sm shadow-lg shadow-rose-900/25 flex items-center justify-center gap-2 disabled:opacity-70 cursor-pointer transition-all"
                 >
                   {isSubmitting ? (
                     <>
