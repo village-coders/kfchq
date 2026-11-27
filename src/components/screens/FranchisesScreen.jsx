@@ -10,6 +10,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
+import PaginationBar from '../common/PaginationBar';
 
 export default function FranchisesScreen() {
   const {
@@ -24,6 +25,18 @@ export default function FranchisesScreen() {
 
   const [franchiseQuery, setFranchiseQuery] = useState('');
   const [storeQuery, setStoreQuery] = useState('');
+  const [franchisePage, setFranchisePage] = useState(1);
+  const [storePage, setStorePage] = useState(1);
+  const [storePageSize, setStorePageSize] = useState(12);
+  const franchisePageSize = 10;
+
+  useEffect(() => {
+    setFranchisePage(1);
+  }, [franchiseQuery]);
+
+  useEffect(() => {
+    setStorePage(1);
+  }, [selectedFranchiseName, storeQuery]);
 
   // Build unified list of franchises (combining franchisees collection + stores grouped by franchisee)
   const franchiseGroups = useMemo(() => {
@@ -145,7 +158,9 @@ export default function FranchisesScreen() {
                 No matching franchisees found.
               </div>
             ) : (
-              filteredFranchises.map((f) => {
+              filteredFranchises
+                .slice((franchisePage - 1) * franchisePageSize, franchisePage * franchisePageSize)
+                .map((f) => {
                 const isSelected = activeFranchise?.name === f.name;
                 return (
                   <button
@@ -183,6 +198,13 @@ export default function FranchisesScreen() {
               })
             )}
           </div>
+          <PaginationBar
+            totalItems={filteredFranchises.length}
+            currentPage={franchisePage}
+            pageSize={franchisePageSize}
+            onPageChange={setFranchisePage}
+            itemLabel="franchises"
+          />
         </div>
 
         {/* Right Column: Stores under Selected Franchise */}
@@ -221,7 +243,9 @@ export default function FranchisesScreen() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {visibleStores.map((store) => {
+                {visibleStores
+                  .slice((storePage - 1) * storePageSize, storePage * storePageSize)
+                  .map((store) => {
                   const isCertified = store.halalCertified || store.status === 'Passed';
                   return (
                     <div
@@ -273,6 +297,15 @@ export default function FranchisesScreen() {
               </div>
             )}
           </div>
+          <PaginationBar
+            totalItems={visibleStores.length}
+            currentPage={storePage}
+            pageSize={storePageSize}
+            onPageChange={setStorePage}
+            onPageSizeChange={setStorePageSize}
+            pageSizeOptions={[8, 12, 24, 48]}
+            itemLabel="stores"
+          />
         </div>
       </div>
     </div>

@@ -1,12 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Award, Search, CheckCircle2, ShieldAlert, Eye, X, Building2 } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
+import PaginationBar from '../common/PaginationBar';
 
 export default function CertificatesScreen() {
   const { stores, isLoading } = useHq();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [previewCert, setPreviewCert] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(18);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
 
   const certificates = useMemo(() => {
     return stores.map((s) => {
@@ -90,7 +97,8 @@ export default function CertificatesScreen() {
       </div>
 
       {/* Certificates Grid */}
-      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-2xs p-4 sm:p-5">
+      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-2xs overflow-hidden">
+        <div className="p-4 sm:p-5">
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((n) => (
@@ -103,7 +111,9 @@ export default function CertificatesScreen() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.slice(0, 90).map((cert) => (
+            {filtered
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((cert) => (
               <div
                 key={cert.id}
                 className="rounded-2xl border border-stone-200/80 hover:border-amber-300 bg-gradient-to-br from-white to-stone-50/70 p-4 space-y-3 transition-all shadow-2xs"
@@ -168,6 +178,16 @@ export default function CertificatesScreen() {
             ))}
           </div>
         )}
+        </div>
+        <PaginationBar
+          totalItems={filtered.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[12, 18, 36, 72]}
+          itemLabel="certificates"
+        />
       </div>
 
       {/* Certificate Preview Modal */}

@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Package, Search, Plus, Snowflake, Thermometer, Box, CheckCircle2 } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
+import PaginationBar from '../common/PaginationBar';
 
 const CATEGORY_TABS = ['All', 'Frozen', 'Chilled', 'Ambient'];
 
@@ -8,6 +9,12 @@ export default function ProductsScreen() {
   const { products, isLoading, setShowProductModal } = useHq();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(18);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, activeCategory]);
 
   const categoryCounts = useMemo(() => {
     const counts = { All: products.length, Frozen: 0, Chilled: 0, Ambient: 0 };
@@ -114,7 +121,9 @@ export default function ProductsScreen() {
           </div>
         ) : (
           <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {filtered.slice(0, 120).map((prod, idx) => {
+            {filtered
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((prod, idx) => {
               const cat = prod.category || 'Ambient';
               const CatIcon = getCategoryIcon(cat);
               return (
@@ -159,6 +168,15 @@ export default function ProductsScreen() {
             })}
           </div>
         )}
+        <PaginationBar
+          totalItems={filtered.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[12, 18, 36, 72]}
+          itemLabel="products"
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   ClipboardList,
   CheckCircle2,
@@ -9,6 +9,7 @@ import {
   X
 } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
+import PaginationBar from '../common/PaginationBar';
 
 const ROUNDS = ['All Rounds', 'Round One', 'Round Two', 'Round Three'];
 const YEARS = ['All Years', '2020', '2021', '2022', '2023', '2024', '2025', '2026'];
@@ -24,6 +25,12 @@ export default function AuditsScreen({ mode = 'ALL' }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [viewAudit, setViewAudit] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [mode, roundFilter, yearFilter, franchiseeFilter, auditorFilter, search, startDate, endDate]);
 
   const title =
     mode === 'PASSED'
@@ -202,7 +209,9 @@ export default function AuditsScreen({ mode = 'ALL' }) {
             No audit records match your filters.
           </div>
         ) : (
-          filtered.slice(0, 60).map((a) => (
+          filtered
+            .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+            .map((a) => (
             <div
               key={a._id || a.id}
               className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-2.5"
@@ -277,7 +286,9 @@ export default function AuditsScreen({ mode = 'ALL' }) {
                 </td>
               </tr>
             ) : (
-              filtered.slice(0, 100).map((a) => (
+              filtered
+                .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                .map((a) => (
                 <tr key={a._id || a.id} className="hover:bg-stone-50/70">
                   <td className="py-2.5 px-3.5 font-mono font-bold text-stone-800">
                     {a.branchCode || a.storeId || '—'}
@@ -320,6 +331,19 @@ export default function AuditsScreen({ mode = 'ALL' }) {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Shared Pagination for Mobile & Desktop Audits */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+        <PaginationBar
+          totalItems={filtered.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[10, 15, 25, 50]}
+          itemLabel="audits"
+        />
       </div>
 
       {/* Audit Detail Modal */}

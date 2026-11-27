@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Building2, PackagePlus, Store, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { useHq } from '../../context/HqContext';
+import PaginationBar from '../common/PaginationBar';
 
 export default function RequestsScreen({ initialFilter = 'ALL' }) {
   const { requests, isLoading, setShowProductModal, setShowFranchiseModal, setShowStoreModal } = useHq();
   const [filter, setFilter] = useState(initialFilter);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
 
   useEffect(() => {
     setFilter(initialFilter);
   }, [initialFilter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
 
   const headingTitle =
     filter === 'FRANCHISE'
@@ -135,7 +142,9 @@ export default function RequestsScreen({ initialFilter = 'ALL' }) {
           </div>
         ) : (
           <div className="divide-y divide-stone-100">
-            {filtered.map((req, idx) => (
+            {filtered
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((req, idx) => (
               <div
                 key={req._id || req.id || idx}
                 className="p-4 sm:p-5 hover:bg-stone-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
@@ -165,6 +174,15 @@ export default function RequestsScreen({ initialFilter = 'ALL' }) {
             ))}
           </div>
         )}
+        <PaginationBar
+          totalItems={filtered.length}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[10, 12, 24, 48]}
+          itemLabel="requests"
+        />
       </div>
     </div>
   );
