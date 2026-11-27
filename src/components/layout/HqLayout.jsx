@@ -327,7 +327,7 @@ export default function HqLayout({ children }) {
             >
               <Plus className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">New Franchisee</span>
-              <span className="sm:hidden">New</span>
+              <span className="sm:hidden">Franchisee</span>
             </button>
           </div>
         </header>
